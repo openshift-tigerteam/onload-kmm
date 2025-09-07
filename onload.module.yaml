@@ -1,0 +1,34 @@
+apiVersion: kmm.sigs.x-k8s.io/v1beta1
+kind: Module
+metadata:
+  name: onload
+  namespace: onload-kmm
+spec:
+  selector:
+    node-role.kubernetes.io/worker: ""
+  moduleLoader:
+    serviceAccountName: onload-kmm-sa
+    container:
+      modprobe:
+        moduleName: onload
+        args:
+          sfc: ""
+          sfc_char: ""
+          sfc_tune: ""
+
+      kernelMappings:
+        - regexp: '^.+$'
+          containerImage: >-
+            default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-kmod:9.0.2.140-RE11-${KERNEL_FULL_VERSION}
+          build:
+            dockerfileConfigMap:
+              name: onload-kmm-dockerfile
+              key: dockerfile
+            buildArgs:
+              - name: SRPM_IMAGE
+                value: default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140
+              - name: TIMESTAMP
+                value: "INITIAL_BUILD"
+            secrets: 
+              - name: etc-pki-entitlement
+              - name: onload-signing-keys

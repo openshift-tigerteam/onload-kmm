@@ -1,0 +1,14 @@
+FROM registry.redhat.io/ubi9/ubi-minimal:latest
+
+# Install the minimum tools we need
+RUN microdnf install -y unzip && microdnf clean all
+
+# Copy in your SRPM zip
+COPY *-openonload-srpm-release-package.zip /root/openonload-srpm-release-package.zip
+
+# Unpack it
+RUN unzip /root/openonload-srpm-release-package.zip -d /root/ \
+    && rm -f /root/*-openonload-srpm-release-package.zip
+
+# Default to a shell (or adjust if you want this to build/run something directly)
+CMD ["/bin/bash"]
