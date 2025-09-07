@@ -19,7 +19,7 @@
 All instructions should be executed from RHEL bastion host (bastion). 
 
 ### Prepare local environment
-* `git clone <this>`  
+* `git clone https://github.com/openshift-tigerteam/onload-kmm.git`  
 * `cd onload-kmm`
 * `oc login -u kubeadmin -p <password>`
 * Login to OpenShift's exposed internal registry
