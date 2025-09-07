@@ -9,7 +9,7 @@
 ## Prerequisites
 * OpenShift is installed
 * Kernel Module Management operator is installed
-* Internal registry is properly configured - backed by storage, service enabled and route exposed
+* OpenShift internal registry is [configured](https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/registry/setting-up-and-configuring-the-registry) and [exposed](https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/registry/securing-exposing-registry) via route
 * Username/password for user with `cluster-admin`
 * Bastion host running RHEL 9.6
 * Red Hat account
@@ -21,7 +21,7 @@ All instructions should be executed from RHEL bastion host (bastion).
 ### Prepare local environment
 * `git clone https://github.com/openshift-tigerteam/onload-kmm.git`  
 * `cd onload-kmm`
-* `oc login -u kubeadmin -p <password>`
+* `oc login --server=https://api.<cluster>.<domain>:6443 -u kubeadmin -p <password>`
 * Login to OpenShift's exposed internal registry
     * `podman login -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps.<cluster>.<domain> --tls-verify=false`
 * Login to registy.redhat.io from local Podman environment
@@ -39,12 +39,18 @@ oc new-project onload-kmm
 # Added privileged RBAC for onload-kmm-sa service account
 oc apply -f onload-kmm-sa.yaml -n onload-kmm
 
+oc -n onload-kmm create secret docker-registry kmm-internal-reg \
+  --docker-server=image-registry.openshift-image-registry.svc:5000 \
+  --docker-username="kubeadmin" \
+  --docker-password="$(oc whoami -t)" \
+  --docker-email=dummy@example.com
+
 # Copy entitlement to project for dnf access to Red Hat packages
 rm -rf /tmp/entitlement && mkdir /tmp/entitlement
 ## Extract the certs from the source secret
 oc extract secret/etc-pki-entitlement -n openshift-config-managed --to=/tmp/entitlement
 ## Now create a new secret in your target namespace
-oc delete secret etc-pki-entitlement -n onload-kmm && oc create secret generic etc-pki-entitlement --from-file=/tmp/entitlement -n onload-kmm
+oc create secret generic etc-pki-entitlement --from-file=/tmp/entitlement -n onload-kmm
 ```
 
 ## Creating and Importing the Machine Owner Key (MOK) for Onload
@@ -92,7 +98,7 @@ oc adm uncordon <node>
 Build SRPM source container image. The tag should match the version of the onload package downloaded. This will use the  
 ```shell
 podman build -t default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140 -f Containerfile.onload-srpm .
-podman push default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140
+podman push default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140 --tls-verify=false
 ```
 
 ## KMM - The Build
@@ -171,3 +177,11 @@ spec:
             [Install]
             WantedBy=multi-user.target
 ```
+
+
+### Requests for Additions
+
+* KMM will sign it for you. Can remove from build dockerfile. https://kmm.sigs.k8s.io/documentation/secure_boot/#using-signing-with-kmm
+* How to force rebuild
+* require valid tls or push/pull to internal registry, 
+  * would require srpc comtainer image pushed to internal tag

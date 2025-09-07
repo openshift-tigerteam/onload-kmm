@@ -1,2 +1,7 @@
 .tmp
+*.der
+*.priv
+*.pub
+*.pem
+*.pem.b64
 *-openonload-srpm-release-package.zip

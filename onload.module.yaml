@@ -5,7 +5,8 @@ metadata:
   namespace: onload-kmm
 spec:
   selector:
-    node-role.kubernetes.io/worker: ""
+    kubernetes.io/hostname: "<node>"
+    #node-role.kubernetes.io/worker: ""
   moduleLoader:
     serviceAccountName: onload-kmm-sa
     container:
@@ -19,7 +20,9 @@ spec:
       kernelMappings:
         - regexp: '^.+$'
           containerImage: >-
-            default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-kmod:9.0.2.140-RE11-${KERNEL_FULL_VERSION}
+            image-registry.openshift-image-registry.svc:5000/onload-kmm/onload-kmod:9.0.2.140-B1-${KERNEL_FULL_VERSION}
+          registryTLS:
+            insecureSkipTLSVerify: true
           build:
             dockerfileConfigMap:
               name: onload-kmm-dockerfile

@@ -60,5 +60,5 @@ data:
 
     # Preserve the directory structure KMM expects
     COPY --from=builder /lib/modules/${KERNEL_FULL_VERSION} /opt/lib/modules/${KERNEL_FULL_VERSION}
-    RUN ls -la /opt/lib/modules/${KERNEL_FULL_VERSION}
+    RUN ls -laR /opt/lib/modules/${KERNEL_FULL_VERSION}
     RUN sleep 10
