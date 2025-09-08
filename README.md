@@ -116,13 +116,14 @@ oc create secret generic onload-signing-keys \
 ```
 
 ## Create the dockerfile ConfigMap
-This ConfigMap contains the dockerfile to be used to compile the module and create the resulting container image containing the signed `.ko` files
+This ConfigMap contains the dockerfile to be used to compile the module and create the resulting container image containing the signed `.ko` files. 
 ```shell
 oc apply -f onload-kmm-dockerfile.cm.yaml -n onload-kmm
 ```
 
-## Create the dockerfile ConfigMap
+## Create the KMM Module CR
 This is the KMM module CR which ties everything together to create the build process and the resulting daemonset which installs the `.ko` files onto the identified nodes. 
+
 > [!CAUTION]
 > Edit this file to add your specific registry url
 
