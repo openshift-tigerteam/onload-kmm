@@ -2,6 +2,7 @@
 
 ### Platform and Tools  
 * OpenShift 4.19.9
+  * Preferred tls certs installed
 * Kernel Module Management 2.4.1
 * OpenOnload SRPM Release Package 9.0.2.140
 * Bastion host running RHEL 9.6
@@ -19,13 +20,17 @@
 All instructions should be executed from RHEL bastion host (bastion). 
 
 ### Prepare local environment
-* `git clone https://github.com/openshift-tigerteam/onload-kmm.git`  
-* `cd onload-kmm`
-* `oc login --server=https://api.<cluster>.<domain>:6443 -u kubeadmin -p <password>`
-* Login to OpenShift's exposed internal registry
-    * `podman login -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps.<cluster>.<domain> --tls-verify=false`
-* Login to registy.redhat.io from local Podman environment
-    * `podman login registry.redhat.io -u <user> -p <password>`
+
+Let's get the local environment ready and check connectivity.  
+```shell
+git clone https://github.com/openshift-tigerteam/onload-kmm.git
+cd onload-kmm  
+oc login --server=https://api.<cluster>.<domain>:6443 -u kubeadmin -p <password>
+# Login to OpenShift's exposed internal registry
+podman login -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps.<cluster>.<domain> --tls-verify=false
+# Login to registy.redhat.io from local Podman environment
+podman login registry.redhat.io -u <user> -p <password>
+```
 
 ## Download the SRPM
 * Download [OpenOnload SRPM Release Package](https://www.xilinx.com/support/download/nic-software-and-drivers.html#open) to project root folder. 
@@ -122,7 +127,7 @@ This is the KMM module CR which ties everything together to create the build pro
 > Edit this file to add your specific registry url
 
 ```shell
-oc apply -f onload.module.yaml -n onload-kmm # Cleanup RE11
+oc apply -f onload.module.yaml -n onload-kmm 
 ```
 <Add docs about the module, keys, etc>
 
@@ -135,6 +140,14 @@ mokutil --list-enrolled
 # Is it there?? The big check!
 lsmod | egrep 'onload|sfc'
 ```
+#### Check Output
+```shell
+sh-5.1# lsmod | egrep 'onload|sfc'
+onload      Your system is functioning as intended.         1077248  0
+sfc_char              143360  1 onload
+sfc_resource          393216  2 onload,sfc_char
+```
+The reason you don't see a single sfc module is that the Solarflare network driver has been restructured into multiple, smaller modules for better organization and functionality. The sfc functionality is now distributed across the sfc_char and sfc_resource modules, which you correctly identified as being loaded. This modular design allows OpenOnload to load only the specific driver components it needs, rather than a monolithic sfc module. This is a common practice in modern Linux kernel development to improve maintainability and flexibility. 
 
 ## Additional Debugging Notes and Development Items
 * The module process to build the specific kmod image is somewhat hard to manage. Specifically, if you *successfully* produce a kmod image with a particular tag but you need to regenerate that image because of a change, the KMM process almost requires you to create a new tag in the `module` - notice the `RE11`. There are some documents on how to force the build to regenerate an image and overwrite the existing tag but haven't had time yet to figure that out. The workaround is to just bump the tag. 
