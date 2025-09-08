@@ -34,6 +34,7 @@ podman login registry.redhat.io -u <user> -p <password>
 
 ## Download the SRPM
 * Download [OpenOnload SRPM Release Package](https://www.xilinx.com/support/download/nic-software-and-drivers.html#open) to project root folder. 
+`curl --http2 -O https://www.xilinx.com/content/dam/xilinx/publications/solarflare/onload/openonload/9_0_2_47/sf-122450-ls-17-openonload-srpm-release-package.zip`
 * Note the version.  
 
 ## Copy Certs

@@ -52,8 +52,6 @@ data:
 
     RUN depmod -b / ${KERNEL_FULL_VERSION}
 
-    RUN rpm2cpio /root/rpmbuild/RPMS/x86_64/onload-kmod-*.rpm | cpio -idmv
-
     # Final stage: slim runtime image containing only the .ko files
     FROM registry.redhat.io/ubi9/ubi-minimal:latest
     ARG KERNEL_FULL_VERSION
