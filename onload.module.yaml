@@ -30,8 +30,6 @@ spec:
             buildArgs:
               - name: SRPM_IMAGE
                 value: default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140
-              - name: TIMESTAMP
-                value: "INITIAL_BUILD"
             secrets: 
               - name: etc-pki-entitlement
               - name: onload-signing-keys

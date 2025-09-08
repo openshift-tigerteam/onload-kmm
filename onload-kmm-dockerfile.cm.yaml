@@ -7,13 +7,10 @@ data:
   dockerfile: |
     ARG KERNEL_FULL_VERSION
     ARG SRPM_IMAGE
-    ARG TIMESTAMP
 
     FROM ${SRPM_IMAGE} AS srpm
     FROM registry.redhat.io/ubi9/ubi:latest as builder
     ARG KERNEL_FULL_VERSION
-    ARG TIMESTAMP
-    RUN echo "TIMESTAMP=${TIMESTAMP}"
     RUN echo "KERNEL_FULL_VERSION=${KERNEL_FULL_VERSION}"
 
     RUN dnf install -y -q \
@@ -34,6 +31,7 @@ data:
           kmod \
           unzip \
           rpm-build \
+          --setopt=sslverify=false \ 
         && dnf clean all -q
 
     # Bring in SRPM from stage 0

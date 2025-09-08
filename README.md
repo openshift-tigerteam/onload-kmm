@@ -26,7 +26,7 @@ Let's get the local environment ready and check connectivity.
 git clone https://github.com/openshift-tigerteam/onload-kmm.git
 cd onload-kmm  
 oc login --server=https://api.<cluster>.<domain>:6443 -u kubeadmin -p <password>
-# Login to OpenShift's exposed internal registry
+# Login to OpenShift's exposed internal registry (change cluster and domain values)
 podman login -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps.<cluster>.<domain> --tls-verify=false
 # Login to registy.redhat.io from local Podman environment
 podman login registry.redhat.io -u <user> -p <password>
