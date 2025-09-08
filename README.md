@@ -36,6 +36,9 @@ podman login registry.redhat.io -u <user> -p <password>
 * Download [OpenOnload SRPM Release Package](https://www.xilinx.com/support/download/nic-software-and-drivers.html#open) to project root folder. 
 * Note the version.  
 
+## Copy Certs
+If you have any intermediate certs that need to be used for connecting to external repositories, add them to the project root folder as `.pem` files. They will be included in the SRPM source container image in the `/root` folder alongside the SRPM. 
+
 ## Create OpenShift Project
 ```shell
 # Create project

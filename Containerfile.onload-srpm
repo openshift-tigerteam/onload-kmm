@@ -6,6 +6,8 @@ RUN dnf install -y unzip --setopt=sslverify=false && dnf clean all
 # Copy in your SRPM zip
 COPY *-openonload-srpm-release-package.zip /root/openonload-srpm-release-package.zip
 
+COPY *.pem /root
+
 # Unpack it
 RUN unzip /root/openonload-srpm-release-package.zip -d /root/ \
     && rm -f /root/*-openonload-srpm-release-package.zip

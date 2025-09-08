@@ -13,6 +13,9 @@ data:
     ARG KERNEL_FULL_VERSION
     RUN echo "KERNEL_FULL_VERSION=${KERNEL_FULL_VERSION}"
 
+    COPY --from=srpm /root/*.pem /etc/pki/ca-trust/source/anchors/
+    RUN update-ca-trust
+
     RUN dnf install -y -q \
           make \
           gcc \
@@ -31,7 +34,6 @@ data:
           kmod \
           unzip \
           rpm-build \
-          --setopt=sslverify=false \ 
         && dnf clean all -q
 
     # Bring in SRPM from stage 0
