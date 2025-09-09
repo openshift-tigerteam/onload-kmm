@@ -13,13 +13,6 @@ data:
     ARG KERNEL_FULL_VERSION
     RUN echo "KERNEL_FULL_VERSION=${KERNEL_FULL_VERSION}"
 
-    COPY --from=srpm /root/*.pem /etc/pki/tls/certs/mitm.pem
-    # TODO: check if these are all needed
-    ENV SSL_CERT_FILE=/etc/pki/tls/certs/mitm.pem
-    ENV CURL_CA_BUNDLE=/etc/pki/tls/certs/mitm.pem
-    ENV SSL_CERT_FILE=/etc/pki/tls/certs/mitm.pem
-    ENV PYTHONHTTPSVERIFY=/etc/pki/tls/certs/mitm.pem
-
     RUN dnf install -y \
           make \
           gcc \

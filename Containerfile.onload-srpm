@@ -1,12 +1,10 @@
 FROM registry.redhat.io/ubi9/ubi:latest
 
 # Install the minimum tools we need
-RUN dnf install -y unzip --setopt=sslverify=false && dnf clean all
+RUN dnf install -y unzip && dnf clean all
 
 # Copy in your SRPM zip
 COPY *-openonload-srpm-release-package.zip /root/openonload-srpm-release-package.zip
-
-COPY *.pem /root
 
 # Unpack it
 RUN unzip /root/openonload-srpm-release-package.zip -d /root/ \

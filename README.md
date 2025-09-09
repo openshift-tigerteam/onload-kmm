@@ -37,7 +37,7 @@ podman login registry.redhat.io -u <user> -p <password>
 ## Download the SRPM
 * Download [OpenOnload SRPM Release Package](https://www.xilinx.com/support/download/nic-software-and-drivers.html#open) to project root folder.
     * Example: `curl --http2 -O https://www.xilinx.com/content/dam/xilinx/publications/solarflare/onload/openonload/9_0_2_47/sf-122450-ls-17-openonload-srpm-release-package.zip`
-* Note the version.  
+* Note the version as <srpm_version>  
 
 ## Copy Certs
 If you have any intermediate certs that need to be used for connecting to external repositories, add them to the project root folder as `.pem` files. They will be included in the SRPM source container image in the `/root` folder alongside the SRPM. 
@@ -100,8 +100,8 @@ oc adm uncordon <node>
 ## KMM - Building the SPRM source container image
 Build SRPM source container image. The tag should match the version of the onload package downloaded. This will use the  
 ```shell
-podman build -t default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140 -f Containerfile.onload-srpm .
-podman push default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140 --tls-verify=false
+podman build -t default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:<srpm_version> -f Containerfile.onload-srpm .
+podman push default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:<srpm_version> --tls-verify=false
 ```
 
 ## KMM - The Build
@@ -123,7 +123,7 @@ oc apply -f onload-kmm-dockerfile.cm.yaml -n onload-kmm
 This is the KMM module CR which ties everything together to create the build process and the resulting daemonset which installs the `.ko` files onto the identified nodes. 
 
 > [!CAUTION]
-> Edit this file to add your specific registry url
+> Edit this file to add your specific registry url and the version of the srpm container image created above. Also, change the node selector to match your environment.
 
 ```shell
 oc apply -f onload.module.yaml -n onload-kmm 

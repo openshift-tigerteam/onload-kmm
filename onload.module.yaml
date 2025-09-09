@@ -16,11 +16,12 @@ spec:
           sfc: ""
           sfc_char: ""
           sfc_tune: ""
+      inTreeModulesToRemove: ["sfc"]
 
       kernelMappings:
         - regexp: '^.+$'
           containerImage: >-
-            image-registry.openshift-image-registry.svc:5000/onload-kmm/onload-kmod:9.0.2.140-B1-${KERNEL_FULL_VERSION}
+            image-registry.openshift-image-registry.svc:5000/onload-kmm/onload-kmod:<srpm_version>-${KERNEL_FULL_VERSION}
           registryTLS:
             insecureSkipTLSVerify: true
           build:
@@ -29,7 +30,7 @@ spec:
               key: dockerfile
             buildArgs:
               - name: SRPM_IMAGE
-                value: default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:9.0.2.140
+                value: default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:<srpm_version>
             secrets: 
               - name: etc-pki-entitlement
               - name: onload-signing-keys
