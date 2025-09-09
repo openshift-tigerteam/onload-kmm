@@ -1,5 +1,7 @@
 # onload-kmm
 
+This repository describes how to compile and install SolarFlare's OpenOnload kernel modules with Kernel Module Management (KMM) on OpenShift. The integration with the Kernel Module Management (KMM) system is being developed to address the lack of an official AMD solution for building and deploying kernel modules for their Solarflare network cards into OpenShift. This project, which is currently a proof of concept, involves creating a KMM integration that fetches the source RPM from AMD, then compiles, signs, and installs the necessary kernel modules on an OpenShift platform. 
+
 ### Platform and Tools  
 * OpenShift 4.19.9
   * Preferred tls certs installed
