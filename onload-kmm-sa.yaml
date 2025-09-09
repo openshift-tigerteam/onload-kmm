@@ -19,12 +19,27 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: use-privileged-scc
+  name: onload-kmm-sa-use-privileged-scc
   namespace: onload-kmm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: use-privileged-scc
+subjects:
+- kind: ServiceAccount
+  name: onload-kmm-sa
+  namespace: onload-kmm
+---
+# Allow push/pull to internal OpenShift registry in this project
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: onload-kmm-sa-registry-editor
+  namespace: onload-kmm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: registry-editor  
 subjects:
 - kind: ServiceAccount
   name: onload-kmm-sa

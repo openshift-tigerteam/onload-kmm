@@ -33,8 +33,8 @@ podman login registry.redhat.io -u <user> -p <password>
 ```
 
 ## Download the SRPM
-* Download [OpenOnload SRPM Release Package](https://www.xilinx.com/support/download/nic-software-and-drivers.html#open) to project root folder. 
-`curl --http2 -O https://www.xilinx.com/content/dam/xilinx/publications/solarflare/onload/openonload/9_0_2_47/sf-122450-ls-17-openonload-srpm-release-package.zip`
+* Download [OpenOnload SRPM Release Package](https://www.xilinx.com/support/download/nic-software-and-drivers.html#open) to project root folder.
+    * Example: `curl --http2 -O https://www.xilinx.com/content/dam/xilinx/publications/solarflare/onload/openonload/9_0_2_47/sf-122450-ls-17-openonload-srpm-release-package.zip`
 * Note the version.  
 
 ## Copy Certs
@@ -47,12 +47,6 @@ oc new-project onload-kmm
 
 # Added privileged RBAC for onload-kmm-sa service account
 oc apply -f onload-kmm-sa.yaml -n onload-kmm
-
-oc -n onload-kmm create secret docker-registry kmm-internal-reg \
-  --docker-server=image-registry.openshift-image-registry.svc:5000 \
-  --docker-username="kubeadmin" \
-  --docker-password="$(oc whoami -t)" \
-  --docker-email=dummy@example.com
 
 # Copy entitlement to project for dnf access to Red Hat packages
 rm -rf /tmp/entitlement && mkdir /tmp/entitlement
@@ -68,7 +62,6 @@ Create the Machine Owner Key (MOK) for Onload and all the formats
 ```shell
 openssl req -new -x509 -newkey rsa:2048 -keyout mok-onload.priv -outform DER -out mok-onload.der -nodes -days 36500 -subj "/CN=OnloadModule/"
 openssl x509 -in mok-onload.der -inform DER -out mok-onload.pem -outform PEM
-base64 -w0 mok-onload.pem > mok-onload.pem.b64
 ```  
 Install the MOK into the hosts. Do this for every host where the kernel driver needs to be present. 
 ```shell
@@ -79,7 +72,6 @@ sudo mokutil --import /var/home/core/mok-onload.der
 # Enter password
 exit
 exit
-oc adm cordon <node>
 oc adm drain --ignore-daemonsets --delete-emptydir-data <node>
 oc debug node/<node>
 chroot /host 
