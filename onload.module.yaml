@@ -5,19 +5,30 @@ metadata:
   namespace: onload-kmm
 spec:
   selector:
-    kubernetes.io/hostname: "<node>"
+    #kubernetes.io/hostname: "<node_name>"
     #node-role.kubernetes.io/worker: ""
+    #feature.node.kubernetes.io/pci-1924.present=true
   moduleLoader:
     serviceAccountName: onload-kmm-sa
     container:
       modprobe:
-        moduleName: onload
-        args:
-          sfc: ""
-          sfc_char: ""
-          sfc_tune: ""
-      inTreeModulesToRemove: ["sfc"]
-
+        moduleName: sfc
+        modulesLoadingOrder:
+          - sfc
+          - sfc_resource
+          - sfc_char
+          - onload
+        dirName: /opt
+      lifecycle:
+        preStart:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Pre-loading MTD module..."
+              modprobe mtd
+              echo "MTD module loaded, ready for sfc"
       kernelMappings:
         - regexp: '^.+$'
           containerImage: >-
@@ -26,11 +37,20 @@ spec:
             insecureSkipTLSVerify: true
           build:
             dockerfileConfigMap:
-              name: onload-kmm-dockerfile
+              name: onload-kmm-build-dockerfile
               key: dockerfile
             buildArgs:
               - name: SRPM_IMAGE
-                value: default-route-openshift-image-registry.apps.<cluster>.<domain>/onload-kmm/onload-srpm:<srpm_version>
+                value: image-registry.openshift-image-registry.svc:5000/onload-kmm/onload-srpm:<srpm_version>
             secrets: 
               - name: etc-pki-entitlement
-              - name: onload-signing-keys
+          sign:
+            keySecret:
+              name: onload-signing-key
+            certSecret:
+              name: onload-signing-cert
+            filesToSign:
+              - /opt/lib/modules/${KERNEL_FULL_VERSION}/extra/onload.ko
+              - /opt/lib/modules/${KERNEL_FULL_VERSION}/extra/sfc.ko
+              - /opt/lib/modules/${KERNEL_FULL_VERSION}/extra/sfc_char.ko
+              - /opt/lib/modules/${KERNEL_FULL_VERSION}/extra/sfc_resource.ko

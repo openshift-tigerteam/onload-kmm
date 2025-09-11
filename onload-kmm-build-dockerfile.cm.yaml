@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: onload-kmm-build-dockerfile
+  namespace: onload-kmm
+data:
+  dockerfile: |
+    ARG KERNEL_FULL_VERSION
+    ARG SRPM_IMAGE
+
+    FROM ${SRPM_IMAGE} AS srpm
+    FROM registry.redhat.io/ubi9/ubi:latest as builder
+    ARG KERNEL_FULL_VERSION
+    RUN echo "KERNEL_FULL_VERSION=${KERNEL_FULL_VERSION}"
+
+    # Bring in SRPM
+    COPY --from=srpm /root/*.src.rpm /root/
+
+    # Expand and build SRPM
+    RUN rpm -ivh /root/*.src.rpm
+    RUN dnf builddep -y /root/rpmbuild/SPECS/openonload.spec && \
+      dnf install -y \
+        rpm-build \
+        kernel-devel-${KERNEL_FULL_VERSION} \
+        kernel-headers-${KERNEL_FULL_VERSION} \
+        kmod \
+      && dnf clean all
+    RUN rpmbuild -bb /root/rpmbuild/SPECS/openonload.spec
+    RUN rpm -ivh --nodeps --noscripts /root/rpmbuild/RPMS/x86_64/onload-kmod-*.rpm
+
+    FROM registry.redhat.io/ubi9/ubi-minimal:latest
+    ARG KERNEL_FULL_VERSION
+    RUN microdnf install -y kmod \
+      && microdnf clean all
+    # Preserve the directory structure KMM expects
+    COPY --from=builder /lib/modules/${KERNEL_FULL_VERSION} /opt/lib/modules/${KERNEL_FULL_VERSION}
+    RUN ls -laR /opt/lib/modules/${KERNEL_FULL_VERSION}
+    RUN depmod -b /opt ${KERNEL_VERSION}
+    RUN sleep 10
+    CMD ["/bin/bash"]
