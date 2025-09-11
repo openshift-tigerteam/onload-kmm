@@ -160,9 +160,9 @@ oc apply -f onload-kmm-build-dockerfile.cm.yaml -n onload-kmm
 ## Create the KMM Module CR
 This is the KMM module CR which ties everything together to create the build process and the resulting daemonset which signs and installs the `.ko` files onto the identified nodes. 
 
-> [!CAUTION]
-> Edit this file to add your version  of the srpm container image created above - `<srpm_version>`. 
-> Change the node selector to match your environment. If you are using the `feature.node.kubernetes.io/pci-1924.present=true` label from NFD, make sure that the nodes you want to install the module on have that label.
+> [!IMPORTANT]
+> * Edit this file to add your version  of the srpm container image created above - `<srpm_version>`.   
+> * Change the node selector to match your environment. If you are using the `feature.node.kubernetes.io/pci-1924.present=true` label from NFD, make sure that the nodes you want to install the module on have that label.
 
 ```shell
 oc apply -f onload.module.yaml -n onload-kmm 
@@ -271,5 +271,3 @@ spec:
 ### Requests for Additions
 
 * How to force rebuild
-* require valid tls or push/pull to internal registry, 
-  * would require srpc comtainer image pushed to internal tag
