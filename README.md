@@ -26,9 +26,7 @@ All instructions should be executed from RHEL bastion host (bastion).
 
 Variables to be gathered before starting:
 * `<cluster_suffix>` - The cluster name and domain. Example: `us-prod-1.ocp.platform.example.com`
-* List of: 
-    * `<node_name>` and `<node_ip>`
-* 
+* List of all `<node_name>` and `<node_ip>` where the onload module will be installed.
 
 ### Prepare local environment
 
@@ -92,8 +90,9 @@ oc create secret generic onload-signing-cert \
   -n onload-kmm --dry-run=client -o yaml | oc apply -f -
 ```
 
-> [!IMPORTANT]  
-> (START LOOP) Loop over all nodes that will run the onload module and import the MOK key into each node.
+
+| :loop:  Loop over all nodes that will run the onload module and import the MOK key into each node.   |
+|----------------------------------------------|
 
 Copy the key to the host (DER format) and then import the key into MOK. Do this for every host where the kernel driver needs to be present. 
 ```shell
@@ -132,7 +131,8 @@ chroot /host
 oc adm uncordon <node_name>
 ```
 
-> (END LOOP) 
+| :loop:  END LOOP  |
+|----------------------------------------------|
 
 ## KMM - Building the SPRM source container image
 Build SRPM source container image. The tag should match the version of the onload package downloaded. This will use the `Dockerfile.onload-srpm` dockerfile.
