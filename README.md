@@ -92,8 +92,9 @@ oc create secret generic onload-signing-cert \
 
 
 | :loop:  START LOOP |
-| Loop over all nodes that will run the onload module and import the MOK key into each node.   |
 |----------------------------------------------|
+| Loop over all nodes that will run the onload module and import the MOK key into each node.   |
+
 
 Copy the key to the host (DER format) and then import the key into MOK. Do this for every host where the kernel driver needs to be present. 
 ```shell
