@@ -66,7 +66,7 @@ oc apply -f onload-kmm-sa.yaml -n onload-kmm
 oc get secret etc-pki-entitlement -n openshift-config-managed -o yaml | \
   sed 's/namespace: openshift-config-managed/namespace: onload-kmm/' | \
   sed '/resourceVersion:/d; /uid:/d; /creationTimestamp:/d' | \
-  oc replace -f -
+  oc apply -f -
 ```
 
 ## Creating and Importing the Machine Owner Key (MOK) for Onload
