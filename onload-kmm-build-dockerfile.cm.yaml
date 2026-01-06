@@ -7,9 +7,10 @@ data:
   dockerfile: |
     ARG KERNEL_FULL_VERSION
     ARG SRPM_IMAGE
+    ARB DTK_AUTO
 
     FROM ${SRPM_IMAGE} AS srpm
-    FROM registry.redhat.io/ubi9/ubi:latest as builder
+    FROM ${DTK_AUTO} as builder
     ARG KERNEL_FULL_VERSION
     RUN echo "KERNEL_FULL_VERSION=${KERNEL_FULL_VERSION}"
 
